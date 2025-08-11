@@ -1,0 +1,45 @@
+<% include ./partials/header.ejs %>
+<div class="w-full h-screen bg-zinc-300 flex items-center justify-center bg-cover px-4 sm:px-0" 
+  style="background-image: url('https://images.unsplash.com/photo-1501504905252-473c47e087f8?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')">
+  
+  <div class="w-full sm:w-[30vw] bg-white px-6 sm:px-20 py-6 sm:py-8 rounded-[20px] sm:rounded-[30px] backdrop-blur-sm bg-white/90">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Pinterest-logo.png" 
+         alt="" 
+         class="w-14 h-14 sm:w-17 sm:h-17 mx-auto mb-3">
+    
+    <h1 class="text-2xl sm:text-3xl text-center font-semibold text-zinc-800 tracking-tighter leading-none mb-6">
+      Welcome to Pinterest
+    </h1>
+
+    <% if(error.length > 0 ){%>
+      <p class="text-red-600 text-sm sm:text-[16px] w-full capitalize"><%= error %></p>
+    <%} %>
+
+    <form action="/login" method="post">
+      <input class="border-2 border-zinc-200 rounded-2xl block mt-3 w-full px-3 py-2 text-sm sm:text-base placeholder-shown:text-zinc-500 hover:border-red-400" 
+             type="text" 
+             name="username" 
+             placeholder="username">
+      
+      <input class="border-2 border-zinc-200 rounded-2xl block mt-3 w-full px-3 py-2 text-sm sm:text-base placeholder-shown:text-zinc-500 hover:border-red-400" 
+             type="password" 
+             name="password" 
+             placeholder="password">
+      
+      <a href="#" class="inline-block mt-2 font-semibold text-xs sm:text-sm text-zinc-600">Forgot Password ?</a>
+      
+      <input class="border-2 block mt-3 w-full px-3 py-2 bg-red-600 text-white rounded-2xl hover:bg-red-700 cursor-pointer text-sm sm:text-base" 
+             type="submit" 
+             value="Login">
+    </form>
+
+    <p class="text-center text-xs sm:text-[14px] mt-3 font-extralight text-zinc-500">
+      By continuing, you agree to Pinterest's Terms of Service and acknowledge you've read our Privacy Policy. Notice at collection.
+    </p>
+    
+    <p class="text-center font-semibold mt-1 text-sm sm:text-base">
+      <a href="/register">Not on Pinterest yet? Sign up</a>
+    </p>
+  </div>
+</div>
+<% include ./partials/footer.ejs %>
