@@ -13,18 +13,13 @@
       <div class="img w-24 h-24 sm:w-32 sm:h-32 bg-zinc-200 rounded-full overflow-hidden">
         <img
           class="w-full h-full object-cover object-top"
-          src="/images/uploads/<%= user.profileImage %>"
+          src="<%= user.profileImage.url %>"
           alt=""
         />
       </div>
     </div>
     <h1 class="text-xl sm:text-2xl font-semibold mt-3"><%=user.fullname%></h1>
     <h3 class="text-sm sm:text-[16px]">@<%= user.username %></h3>
-    <a
-      href="/edit"
-      class="px-5 py-2 sm:px-7 bg-zinc-700 rounded-full text-xs sm:text-sm font-semibold mt-3"
-      >Edit</a
-    >
     <a href="/add"
       class="px-8 py-2 sm:px-10 rounded-lg bg-red-700 text-[12px] sm:text-[13px] font-semibold mt-4"
     >
@@ -38,7 +33,7 @@
       <div class="cardimg w-full max-w-[14rem] h-36 sm:w-52 sm:h-40 rounded-xl bg-zinc-500 overflow-hidden">
         <img
           class="w-full h-full object-cover"
-          src="/images/uploads/<%= user?.posts[0]?.image %>"
+          src="<%= user?.posts[0]?.image.url %>"
         />
       </div>
       <a href="/show/posts" class="inline-block text-lg sm:text-xl font-semibold mt-3 text-center sm:text-left">

@@ -28,7 +28,8 @@ const userSchema = new mongoose.Schema({
     default: ''   // default empty string if no image is set
   },
   profileImage:{
-    type:String,
+    url:String,
+    filename:String,
   },
   posts: [
     {

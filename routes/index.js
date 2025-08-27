@@ -5,7 +5,9 @@ var router = express.Router();
 const passport = require("passport");
 const localStrategy = require("passport-local");
 passport.use(new localStrategy(users.authenticate()));
-const upload = require("./multer");
+const multer = require("multer");
+const { storage } = require("./multer");
+const upload = multer({ storage });
 
 /* GET home page. */
 router.get("/", function (req, res, next) {
@@ -30,8 +32,8 @@ router.get("/show/posts", isloggedIn, async function (req, res, next) {
 
 router.get("/feed", isloggedIn, async function (req, res, next) {
   const user = await users.findOne({ username: req.session.passport.user });
-  const post = await posts.find().populate('user');
-  res.render("feed", { user , post , nav: true });
+  const post = await posts.find().populate("user");
+  res.render("feed", { user, post, nav: true });
 });
 
 router.get("/register", function (req, res, next) {
@@ -94,8 +96,13 @@ router.post(
   isloggedIn,
   upload.single("image"),
   async function (req, res, next) {
+    const url = req.file.path;
+    const filename = req.file.filename;
     const user = await users.findOne({ username: req.session.passport.user });
-    user.profileImage = req.file.filename;
+    user.profileImage = {
+      url:url,
+      filename:filename,
+    };
     await user.save();
     res.redirect("/profile");
   }
@@ -110,21 +117,26 @@ router.post(
   isloggedIn,
   upload.single("postimage"),
   async function (req, res, next) {
+    const url = req.file.path;
+    const filename = req.file.filename;
     const user = await users.findOne({ username: req.session.passport.user });
     const post = await posts.create({
       postText: req.body.title,
       user: user._id,
       description: req.body.description,
-      image: req.file.filename,
+      image: {
+        url:url,
+        filename:filename,
+      },
     });
-
+    await post.save();
     user.posts.push(post._id);
     await user.save();
     res.redirect("/profile");
   }
 );
 
-router.get('/delete/:id', async (req, res) => {
+router.get("/delete/:id", async (req, res) => {
   try {
     const postId = req.params.id;
 
@@ -132,18 +144,15 @@ router.get('/delete/:id', async (req, res) => {
     const deletedPost = await posts.findByIdAndDelete(postId);
 
     // 2. Remove that post from user's posts array
-    await users.findByIdAndUpdate(
-      deletedPost.user,
-      { $pull: { posts: postId } }
-    );
+    await users.findByIdAndUpdate(deletedPost.user, {
+      $pull: { posts: postId },
+    });
 
-    res.redirect('/profile'); // or wherever you want
+    res.redirect("/profile"); // or wherever you want
   } catch (err) {
     console.log(err);
-    res.redirect('/error'); // handle errors
+    res.redirect("/error"); // handle errors
   }
 });
-
-
 
 module.exports = router;

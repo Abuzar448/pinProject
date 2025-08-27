@@ -1,6 +1,8 @@
-require("dotenv").config();
-const mongoose = require("mongoose");
+if(process.env.NODE_ENV !== 'production'){
+  require('dotenv').config();
+}
 
+const mongoose = require("mongoose");
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -12,36 +14,56 @@ var usersRouter = require('./routes/users');
 const flash = require('connect-flash');
 const passport = require('passport');
 const expressSession = require('express-session');
+const MongoStore = require("connect-mongo");
 
 var app = express();
 
-// app.js / server.js
 
-// Database Connection
-mongoose.connect(process.env.DATABASE_URL)
-  .then(() => console.log("✅ MongoDB connected successfully"))
-  .catch(err => console.error("❌ MongoDB connection error:", err));
+let dbUrl = process.env.MONGO_URL;
 
-app.use(express.json());
+main()
+  .then(() => {
+    console.log("Connected to DB ✅");
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+
+async function main() {
+  await mongoose.connect(dbUrl);
+}
 
 
-// Start Server
-app.listen(process.env.PORT || 4000, process.env.HOST || "0.0.0.0", () => {
-  console.log(`🚀 Server running on ${process.env.HOST}:${process.env.PORT}`);
+const store = MongoStore.create({
+  mongoUrl:dbUrl,
+  crypto:{
+    secret:process.env.SECRET,
+  },
+  touchAfter:24 * 3600,
 });
 
+store.on("error",()=>{
+  console.log("error in mongo session store ",err);
+})
 
+const sessionOptions = {
+  store,
+  resave:false,
+  saveUninitialized:true,
+  secret:process.env.SECRET,
+  cookie:{
+    expires:Date.now() + 7 * 24 * 60 * 60 * 1000,
+    maxAge:7 * 24 * 60 * 60 * 1000,
+    httpOnly:true,
+  },
+}
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.use(flash());
-app.use(expressSession({
-  resave:false,
-  saveUninitialized:false,
-  secret:'hey hey hey '
-}))
+app.use(expressSession(sessionOptions));
 
 app.use(passport.initialize());
 app.use(passport.session());
